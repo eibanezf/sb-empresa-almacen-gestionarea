@@ -28,8 +28,7 @@ import pe.com.empresa.almacen.gestionarea.entity.Area;
 import pe.com.empresa.almacen.gestionarea.repository.AreaRepository;
 import pe.com.empresa.almacen.gestionarea.util.Constantes;
 import pe.com.empresa.almacen.gestionarea.util.PropiedadesExternas;
-import pe.com.empresa.almacen.gestionarea.util.ResponseValidarVacio;
-import pe.com.empresa.almacen.gestionarea.util.Utilitarios;
+import pe.com.empresa.almacen.gestionarea.util.ResponseValidarBean;
 
 @Service
 public class AreaService {
@@ -47,23 +46,20 @@ public class AreaService {
 		ListarAreasResponseType responseType = new ListarAreasResponseType();
 		ListarAreasResponse response = new ListarAreasResponse();
 
-		try {
-			log.info(Constantes.LOG_2P, msjTx, Constantes.SEPARADOR);
-			log.info(Constantes.LOG_2P, msjTx, Constantes.ACT1_OBT_AREAS);
-			log.info(Constantes.LOG_2P, msjTx, Constantes.SEPARADOR);
-			
-			List<Area> areas = (List<Area>) areaRepository.findAll();
+		log.info(Constantes.LOG_2P, msjTx, Constantes.SEPARADOR);
+		log.info(Constantes.LOG_2P, msjTx, Constantes.ACT1_OBT_AREAS);
+		log.info(Constantes.LOG_2P, msjTx, Constantes.SEPARADOR);
+		
+		List<Area> areas = (List<Area>) areaRepository.findAll();
 
-			headerResponse.setCodigoRespuesta(p.idf0Cod);
-			headerResponse.setMensajeRespuesta(p.idf0Msj);
-			
-			responseType.setHeaderResponse(headerResponse);
-			responseType.setAreas(areas);
+		headerResponse.setCodigoRespuesta(p.idf0Cod);
+		headerResponse.setMensajeRespuesta(p.idf0Msj);
+		
+		responseType.setHeaderResponse(headerResponse);
+		responseType.setAreas(areas);
 
-			response.setListarAreasResponse(responseType);
-		} catch (Exception e) {
-			log.error(Constantes.LOG_2P, msjTx, Utilitarios.getExceptionToMensaje(e));
-		}
+		response.setListarAreasResponse(responseType);
+		
 		return response;
 	}
 
@@ -73,46 +69,41 @@ public class AreaService {
 		BuscarAreaResponseType responseType = new BuscarAreaResponseType();
 		BuscarAreaResponse response = new BuscarAreaResponse();
 		
-		try {
-			log.info(Constantes.LOG_2P, msjTx, Constantes.SEPARADOR);
-			log.info(Constantes.LOG_2P, msjTx, Constantes.ACT1_OBT_AREA);
-			log.info(Constantes.LOG_2P, msjTx, Constantes.SEPARADOR);
-			
-			ResponseValidarVacio responseValidarVacio = validarVacio(msjTx, bodyRequest);
-			
-			if(!responseValidarVacio.esValido()) {
-				headerResponse.setCodigoRespuesta(Constantes.STR_UNO);
-				headerResponse.setMensajeRespuesta(responseValidarVacio.getMensaje());
-				responseType.setHeaderResponse(headerResponse);
-				response.setBuscarAreaResponse(responseType);
-				
-				return response;
-			}
-			
-			Long idArea = Long.valueOf(bodyRequest.getBuscarAreaRequest().getIdArea());
-			
-			Area area = areaRepository.findById(idArea).orElse(null);
-			
-			if(null == area) {
-				headerResponse.setCodigoRespuesta(p.idf1Cod);
-				headerResponse.setMensajeRespuesta(String.format(p.idf1Msj, idArea));
-				responseType.setHeaderResponse(headerResponse);
-				response.setBuscarAreaResponse(responseType);
-				
-				return response; 
-			}
-			
-			headerResponse.setCodigoRespuesta(p.idf0Cod);
-			headerResponse.setMensajeRespuesta(p.idf0Msj);
-			
+		log.info(Constantes.LOG_2P, msjTx, Constantes.SEPARADOR);
+		log.info(Constantes.LOG_2P, msjTx, Constantes.ACT1_OBT_AREA);
+		log.info(Constantes.LOG_2P, msjTx, Constantes.SEPARADOR);
+		
+		ResponseValidarBean responseValidarBean = validarBean(msjTx, bodyRequest);
+		
+		if(!responseValidarBean.esValido()) {
+			headerResponse.setCodigoRespuesta(Constantes.STR_UNO);
+			headerResponse.setMensajeRespuesta(responseValidarBean.getMensaje());
 			responseType.setHeaderResponse(headerResponse);
-			responseType.setArea(area);
-			
 			response.setBuscarAreaResponse(responseType);
-						
-		} catch (Exception e) {
-			log.error(Constantes.LOG_2P, msjTx, Utilitarios.getExceptionToMensaje(e));			
+			
+			return response;
 		}
+		
+		Long idArea = Long.valueOf(bodyRequest.getBuscarAreaRequest().getIdArea());
+		
+		Area area = areaRepository.findById(idArea).orElse(null);
+		
+		if(null == area) {
+			headerResponse.setCodigoRespuesta(p.idf1Cod);
+			headerResponse.setMensajeRespuesta(String.format(p.idf1Msj, idArea));
+			responseType.setHeaderResponse(headerResponse);
+			response.setBuscarAreaResponse(responseType);
+			
+			return response; 
+		}
+		
+		headerResponse.setCodigoRespuesta(p.idf0Cod);
+		headerResponse.setMensajeRespuesta(p.idf0Msj);
+		
+		responseType.setHeaderResponse(headerResponse);
+		responseType.setArea(area);
+		
+		response.setBuscarAreaResponse(responseType);
 		
 		return response;
 	}
@@ -123,36 +114,32 @@ public class AreaService {
 		CrearAreaResponseType responseType = new CrearAreaResponseType();
 		CrearAreaResponse response = new CrearAreaResponse();
 		
-		try {
-			log.info(Constantes.LOG_2P, msjTx, Constantes.SEPARADOR);
-			log.info(Constantes.LOG_2P, msjTx, Constantes.ACT1_CREAR_AREA);
-			log.info(Constantes.LOG_2P, msjTx, Constantes.SEPARADOR);
-			
-			ResponseValidarVacio responseValidarVacio = validarVacio(msjTx, bodyRequest);
-			
-			if(!responseValidarVacio.esValido()) {
-				headerResponse.setCodigoRespuesta(Constantes.STR_UNO);
-				headerResponse.setMensajeRespuesta(responseValidarVacio.getMensaje());
-				responseType.setHeaderResponse(headerResponse);
-				response.setCrearAreaResponse(responseType);
-				
-				return response;
-			}
-			
-			Area requestArea = new Area();
-			requestArea.setNombre(bodyRequest.getCrearAreaRequest().getNombre());
-
-			Area responseArea = areaRepository.save(requestArea);
-			responseType.setArea(responseArea);
-
-			headerResponse.setCodigoRespuesta(p.idf0Cod);
-			headerResponse.setMensajeRespuesta(p.idf0Msj);
-
+		log.info(Constantes.LOG_2P, msjTx, Constantes.SEPARADOR);
+		log.info(Constantes.LOG_2P, msjTx, Constantes.ACT1_CREAR_AREA);
+		log.info(Constantes.LOG_2P, msjTx, Constantes.SEPARADOR);
+		
+		ResponseValidarBean responseValidarBean = validarBean(msjTx, bodyRequest);
+		
+		if(!responseValidarBean.esValido()) {
+			headerResponse.setCodigoRespuesta(Constantes.STR_UNO);
+			headerResponse.setMensajeRespuesta(responseValidarBean.getMensaje());
 			responseType.setHeaderResponse(headerResponse);
 			response.setCrearAreaResponse(responseType);
-		} catch (Exception e) {
-			log.error(Constantes.LOG_2P, msjTx, Utilitarios.getExceptionToMensaje(e));			
+			
+			return response;
 		}
+		
+		Area requestArea = new Area();
+		requestArea.setNombre(bodyRequest.getCrearAreaRequest().getNombre());
+
+		Area responseArea = areaRepository.save(requestArea);
+		responseType.setArea(responseArea);
+
+		headerResponse.setCodigoRespuesta(p.idf0Cod);
+		headerResponse.setMensajeRespuesta(p.idf0Msj);
+
+		responseType.setHeaderResponse(headerResponse);
+		response.setCrearAreaResponse(responseType);
 		
 		return response;
 	}
@@ -163,37 +150,33 @@ public class AreaService {
 		ActualizarAreaResponseType responseType = new ActualizarAreaResponseType();
 		ActualizarAreaResponse response = new ActualizarAreaResponse();
 		
-		try {
-			log.info(Constantes.LOG_2P, msjTx, Constantes.SEPARADOR);
-			log.info(Constantes.LOG_2P, msjTx, Constantes.ACT1_ACTUALIZAR_AREA);
-			log.info(Constantes.LOG_2P, msjTx, Constantes.SEPARADOR);
-			
-			ResponseValidarVacio responseValidarVacio = validarVacio(msjTx, bodyRequest);
-			
-			if(!responseValidarVacio.esValido()) {
-				headerResponse.setCodigoRespuesta(Constantes.STR_UNO);
-				headerResponse.setMensajeRespuesta(responseValidarVacio.getMensaje());
-				responseType.setHeaderResponse(headerResponse);
-				response.setActualizarAreaResponse(responseType);
-				
-				return response;
-			}
-			
-			Area requestArea = new Area();
-			requestArea.setIdArea(bodyRequest.getActualizarAreaRequest().getIdArea());
-			requestArea.setNombre(bodyRequest.getActualizarAreaRequest().getNombre());
-
-			Area responseArea = areaRepository.save(requestArea);
-			responseType.setArea(responseArea);
-
-			headerResponse.setCodigoRespuesta(p.idf0Cod);
-			headerResponse.setMensajeRespuesta(p.idf0Msj);
-
+		log.info(Constantes.LOG_2P, msjTx, Constantes.SEPARADOR);
+		log.info(Constantes.LOG_2P, msjTx, Constantes.ACT1_ACTUALIZAR_AREA);
+		log.info(Constantes.LOG_2P, msjTx, Constantes.SEPARADOR);
+		
+		ResponseValidarBean responseValidarBean = validarBean(msjTx, bodyRequest);
+		
+		if(!responseValidarBean.esValido()) {
+			headerResponse.setCodigoRespuesta(Constantes.STR_UNO);
+			headerResponse.setMensajeRespuesta(responseValidarBean.getMensaje());
 			responseType.setHeaderResponse(headerResponse);
 			response.setActualizarAreaResponse(responseType);
-		} catch (Exception e) {
-			log.error(Constantes.LOG_2P, msjTx, Utilitarios.getExceptionToMensaje(e));			
+			
+			return response;
 		}
+		
+		Area requestArea = new Area();
+		requestArea.setIdArea(bodyRequest.getActualizarAreaRequest().getIdArea());
+		requestArea.setNombre(bodyRequest.getActualizarAreaRequest().getNombre());
+
+		Area responseArea = areaRepository.save(requestArea);
+		responseType.setArea(responseArea);
+
+		headerResponse.setCodigoRespuesta(p.idf0Cod);
+		headerResponse.setMensajeRespuesta(p.idf0Msj);
+
+		responseType.setHeaderResponse(headerResponse);
+		response.setActualizarAreaResponse(responseType);
 		
 		return response;
 	}
@@ -204,51 +187,47 @@ public class AreaService {
 		EliminarAreaResponseType responseType = new EliminarAreaResponseType();
 		EliminarAreaResponse response = new EliminarAreaResponse();
 
-		try {
-			log.info(Constantes.LOG_2P, msjTx, Constantes.SEPARADOR);
-			log.info(Constantes.LOG_2P, msjTx, Constantes.ACT1_ELIMINAR_AREA);
-			log.info(Constantes.LOG_2P, msjTx, Constantes.SEPARADOR);
-			
-			ResponseValidarVacio responseValidarVacio = validarVacio(msjTx, bodyRequest);
-			
-			if(!responseValidarVacio.esValido()) {
-				headerResponse.setCodigoRespuesta(Constantes.STR_UNO);
-				headerResponse.setMensajeRespuesta(responseValidarVacio.getMensaje());
-				responseType.setHeaderResponse(headerResponse);
-				response.setEliminarAreaResponse(responseType);
-				
-				return response;
-			}
-			
-			Long idArea = Long.valueOf(bodyRequest.getEliminarAreaRequest().getIdArea());
-			
-			Area area = areaRepository.findById(idArea).orElse(null);
-			
-			if(null == area) {
-				headerResponse.setCodigoRespuesta(p.idf1Cod);
-				headerResponse.setMensajeRespuesta(String.format(p.idf1Msj, idArea));
-				responseType.setHeaderResponse(headerResponse);
-				response.setEliminarAreaResponse(responseType);
-				
-				return response; 
-			}
-			
-			areaRepository.deleteById(idArea);
-			
-			headerResponse.setCodigoRespuesta(p.idf0Cod);
-			headerResponse.setMensajeRespuesta(p.idf0Msj);
-			
+		log.info(Constantes.LOG_2P, msjTx, Constantes.SEPARADOR);
+		log.info(Constantes.LOG_2P, msjTx, Constantes.ACT1_ELIMINAR_AREA);
+		log.info(Constantes.LOG_2P, msjTx, Constantes.SEPARADOR);
+		
+		ResponseValidarBean responseValidarBean = validarBean(msjTx, bodyRequest);
+		
+		if(!responseValidarBean.esValido()) {
+			headerResponse.setCodigoRespuesta(Constantes.STR_UNO);
+			headerResponse.setMensajeRespuesta(responseValidarBean.getMensaje());
 			responseType.setHeaderResponse(headerResponse);
 			response.setEliminarAreaResponse(responseType);
-		} catch (Exception e) {
-			log.error(Constantes.LOG_2P, msjTx, Utilitarios.getExceptionToMensaje(e));			
+			
+			return response;
 		}
+		
+		Long idArea = Long.valueOf(bodyRequest.getEliminarAreaRequest().getIdArea());
+		
+		Area area = areaRepository.findById(idArea).orElse(null);
+		
+		if(null == area) {
+			headerResponse.setCodigoRespuesta(p.idf1Cod);
+			headerResponse.setMensajeRespuesta(String.format(p.idf1Msj, idArea));
+			responseType.setHeaderResponse(headerResponse);
+			response.setEliminarAreaResponse(responseType);
+			
+			return response; 
+		}
+		
+		areaRepository.deleteById(idArea);
+		
+		headerResponse.setCodigoRespuesta(p.idf0Cod);
+		headerResponse.setMensajeRespuesta(p.idf0Msj);
+		
+		responseType.setHeaderResponse(headerResponse);
+		response.setEliminarAreaResponse(responseType);
 		
 		return response;
 	}
 	
-	public ResponseValidarVacio validarVacio(String msjTx, Object beanRequest) {
-		ResponseValidarVacio response = new ResponseValidarVacio();
+	public ResponseValidarBean validarBean(String msjTx, Object beanRequest) {
+		ResponseValidarBean response = new ResponseValidarBean();
 		String mensaje = Constantes.VACIO;
 		String atributo = Constantes.VACIO;
 		boolean valido = true;

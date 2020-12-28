@@ -8,7 +8,7 @@ public class Constantes {
 	public static final String DATOS_BODY_INCOMPLETOS = "Datos de Body incompletos, VERIFICAR:";
 	
 	public static final String SIZE = "El campo debe de tener como maximo {max} caracteres";
-	public static final String NOT_NULL = "El campo debe de tener un valor";
+	public static final String NOT_NULL = "El campo debe de tener un valor valido";
 
 	public static final String VACIO = "";
 	public static final String FORMATOFECHACABECERA = "yyyy-MM-dd'T'HH:mm:ss'Z'";
